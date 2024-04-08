@@ -4,7 +4,7 @@ import (
 	daogext "github.com/darwinOrg/daog-ext"
 	"github.com/darwinOrg/go-biz-task/model"
 	"github.com/darwinOrg/go-biz-task/permission"
-	common_provider "github.com/darwinOrg/go-biz-task/provider"
+	task_provider "github.com/darwinOrg/go-biz-task/provider"
 	dgctx "github.com/darwinOrg/go-common/context"
 	"github.com/darwinOrg/go-common/result"
 	"github.com/darwinOrg/go-web/wrapper"
@@ -22,7 +22,7 @@ func Register(rg *gin.RouterGroup) {
 		NonLogin:     true,
 		BizHandler: func(_ *gin.Context, ctx *dgctx.DgContext, req *task_model.GetTaskRequest) *result.Result[*task_model.CommonTaskVo] {
 			task, err := daogext.WriteWithResult(ctx, func(tc *daog.TransContext) (*task_model.CommonTaskVo, error) {
-				return common_provider.RandomLockForProcessing(ctx, tc, req)
+				return task_provider.RandomLockForProcessing(ctx, tc, req)
 			})
 			if err != nil {
 				return result.FailByError[*task_model.CommonTaskVo](err)
@@ -39,7 +39,7 @@ func Register(rg *gin.RouterGroup) {
 		NonLogin:     true,
 		BizHandler: func(_ *gin.Context, ctx *dgctx.DgContext, req *task_model.EndTaskAsFailRequest) *result.Result[*result.Void] {
 			err := daogext.Write(ctx, func(tc *daog.TransContext) error {
-				return common_provider.EndAsFail(ctx, tc, req.Id, req.Reason)
+				return task_provider.EndAsFail(ctx, tc, req.Id, req.Reason)
 			})
 			if err != nil {
 				return result.FailByError[*result.Void](err)
@@ -56,7 +56,7 @@ func Register(rg *gin.RouterGroup) {
 		NonLogin:     true,
 		BizHandler: func(_ *gin.Context, ctx *dgctx.DgContext, req *task_model.EndTaskAsCanceledRequest) *result.Result[*result.Void] {
 			err := daogext.Write(ctx, func(tc *daog.TransContext) error {
-				return common_provider.EndAsCanceled(ctx, tc, req.Id, req.Reason)
+				return task_provider.EndAsCanceled(ctx, tc, req.Id, req.Reason)
 			})
 			if err != nil {
 				return result.FailByError[*result.Void](err)
