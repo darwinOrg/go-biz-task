@@ -13,6 +13,11 @@ import (
 var AuthToken string
 
 func Check(c *gin.Context) {
+	if AuthToken == "" {
+		c.Next()
+		return
+	}
+
 	ctx := utils.GetDgContext(c)
 	authToken := c.Request.Header["Authorization"]
 	if len(authToken) > 0 {
