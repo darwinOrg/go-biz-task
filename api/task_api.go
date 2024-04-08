@@ -15,6 +15,23 @@ import (
 func Register(rg *gin.RouterGroup) {
 	taskGroup := rg.Group("/public/v1/task", task_permission.Check)
 
+	wrapper.Post(&wrapper.RequestHolder[task_model.InitTaskRequest, *result.Result[int64]]{
+		Remark:       "初始化任务",
+		RouterGroup:  taskGroup,
+		RelativePath: "/init",
+		NonLogin:     true,
+		BizHandler: func(_ *gin.Context, ctx *dgctx.DgContext, req *task_model.InitTaskRequest) *result.Result[int64] {
+			taskId, err := daogext.WriteWithResult(ctx, func(tc *daog.TransContext) (int64, error) {
+				return task_provider.InsertInitTask(ctx, tc, req)
+			})
+			if err != nil {
+				return result.FailByError[int64](err)
+			}
+
+			return result.Success(taskId)
+		},
+	})
+
 	wrapper.Post(&wrapper.RequestHolder[task_model.GetTaskRequest, *result.Result[*task_model.CommonTaskVo]]{
 		Remark:       "获取任务",
 		RouterGroup:  taskGroup,

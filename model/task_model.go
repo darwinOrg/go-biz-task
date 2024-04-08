@@ -1,5 +1,11 @@
 package task_model
 
+type InitTaskRequest struct {
+	TaskType string `json:"taskType" binding:"required" remark:"任务类型"`
+	Channel  string `json:"channel" remark:"渠道"`
+	Content  string `json:"content" remark:"任务内容体"`
+}
+
 type GetTaskRequest struct {
 	TaskType      string `json:"taskType" binding:"required" remark:"任务类型"`
 	Channel       string `json:"channel" remark:"渠道"`

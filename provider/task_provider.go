@@ -9,8 +9,8 @@ import (
 	"github.com/rolandhe/daog"
 )
 
-func InsertInitTask(ctx *dgctx.DgContext, tc *daog.TransContext, taskType string, channel string, content string) (int64, error) {
-	taskId, err := task_dal.ExtBizTaskDao.InsertInitTask(tc, taskType, channel, content)
+func InsertInitTask(ctx *dgctx.DgContext, tc *daog.TransContext, req *task_model.InitTaskRequest) (int64, error) {
+	taskId, err := task_dal.ExtBizTaskDao.InsertInitTask(tc, req.TaskType, req.Channel, req.Content)
 	if err != nil {
 		dglogger.Errorf(ctx, "ExtBizTaskDao.InsertInitTask error: %v", err)
 		return 0, err
