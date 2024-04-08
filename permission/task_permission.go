@@ -1,4 +1,4 @@
-package permission
+package task_permission
 
 import (
 	dgerr "github.com/darwinOrg/go-common/enums/error"

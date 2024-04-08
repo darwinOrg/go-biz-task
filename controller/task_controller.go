@@ -3,7 +3,7 @@ package task_controller
 import (
 	daogext "github.com/darwinOrg/daog-ext"
 	"github.com/darwinOrg/go-biz-task/model"
-	"github.com/darwinOrg/go-biz-task/permission"
+	task_permission "github.com/darwinOrg/go-biz-task/permission"
 	task_provider "github.com/darwinOrg/go-biz-task/provider"
 	dgctx "github.com/darwinOrg/go-common/context"
 	"github.com/darwinOrg/go-common/result"
@@ -13,7 +13,7 @@ import (
 )
 
 func Register(rg *gin.RouterGroup) {
-	taskGroup := rg.Group("/public/v1/task", permission.Check)
+	taskGroup := rg.Group("/public/v1/task", task_permission.Check)
 
 	wrapper.Post(&wrapper.RequestHolder[task_model.GetTaskRequest, *result.Result[*task_model.CommonTaskVo]]{
 		Remark:       "获取任务",
