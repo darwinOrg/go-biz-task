@@ -1,4 +1,4 @@
-package dal
+package task_dal
 
 import (
 	"github.com/rolandhe/daog"

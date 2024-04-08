@@ -1,4 +1,4 @@
-package dal
+package task_dal
 
 import (
 	task_enum "github.com/darwinOrg/go-biz-task/enum"

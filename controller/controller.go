@@ -1,4 +1,4 @@
-package controller
+package task_controller
 
 import (
 	daogext "github.com/darwinOrg/daog-ext"
