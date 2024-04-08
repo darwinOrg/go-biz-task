@@ -12,8 +12,8 @@ import (
 	"github.com/rolandhe/daog"
 )
 
-func Register(rg *gin.RouterGroup) {
-	taskGroup := rg.Group("/public/v1/task", task_permission.Check)
+func Register(e *gin.Engine) {
+	taskGroup := e.Group("/public/v1/task", task_permission.Check)
 
 	wrapper.Post(&wrapper.RequestHolder[task_model.InitTaskRequest, *result.Result[int64]]{
 		Remark:       "初始化任务",
