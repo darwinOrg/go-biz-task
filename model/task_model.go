@@ -9,7 +9,7 @@ type InitTaskRequest struct {
 type PullTaskRequest struct {
 	TaskType      int    `json:"taskType" binding:"required" remark:"任务类型"`
 	Channel       int    `json:"channel" remark:"渠道"`
-	PageSize      int    `json:"pageSize" binding:"required"`
+	PageSize      int    `json:"pageSize" binding:"required" title:"页码" remark:"从多少条任务中随机选择一条"`
 	LockMilli     int64  `json:"lockMilli" binding:"required" remark:"锁定毫秒数"`
 	LockedBy      string `json:"lockedBy" binding:"required" remark:"锁定者"`
 	FixedLockedBy bool   `json:"fixedLockedBy" remark:"是否固定锁定者"`
