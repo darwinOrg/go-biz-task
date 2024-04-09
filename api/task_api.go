@@ -37,7 +37,7 @@ func RegisterApi(e *gin.Engine) {
 	})
 
 	wrapper.Post(&wrapper.RequestHolder[task_model.PullTaskRequest, *result.Result[*task_model.CommonTaskVo]]{
-		Remark:       "获取任务",
+		Remark:       "拉取任务",
 		RouterGroup:  rg,
 		RelativePath: "/pull",
 		NonLogin:     true,
