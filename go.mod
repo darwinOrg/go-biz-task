@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/darwinOrg/daog-ext v0.0.3
-	github.com/darwinOrg/go-common v0.1.25
+	github.com/darwinOrg/go-common v0.1.26
 	github.com/darwinOrg/go-logger v0.0.5
 	github.com/darwinOrg/go-web v0.1.9
 	github.com/gin-gonic/gin v1.9.1

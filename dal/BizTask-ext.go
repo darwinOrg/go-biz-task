@@ -165,9 +165,12 @@ func (d *extBizTaskDao) ReInitTimeoutProcessingTasks(tc *daog.TransContext, task
 	now := time.Now()
 	modifier := daog.NewModifier().
 		Add(BizTaskFields.Status, task_enum.TaskStatus.INIT).
-		Add(BizTaskFields.Reason, "").
+		Add(BizTaskFields.Reason, nil).
 		Add(BizTaskFields.StartAt, nil).
 		Add(BizTaskFields.EndAt, nil).
+		Add(BizTaskFields.LockedBy, nil).
+		Add(BizTaskFields.LockedAt, nil).
+		Add(BizTaskFields.LockUntil, nil).
 		Add(BizTaskFields.ModifiedAt, ttypes.NormalDatetime(now))
 	matcher := daog.NewMatcher().
 		Eq(BizTaskFields.Type, taskType).
