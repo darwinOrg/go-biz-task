@@ -12,7 +12,11 @@ import (
 	"github.com/rolandhe/daog"
 )
 
-func Register(e *gin.Engine) {
+type PushTaskResultCallback func(ctx *dgctx.DgContext, req *task_model.PushTaskResultRequest) error
+
+var pushTaskResultCallback PushTaskResultCallback
+
+func RegisterApi(e *gin.Engine) {
 	rg := e.Group("/public/v1/task", task_permission.Check)
 
 	wrapper.Post(&wrapper.RequestHolder[task_model.InitTaskRequest, *result.Result[int64]]{
@@ -56,6 +60,13 @@ func Register(e *gin.Engine) {
 		NonLogin:     true,
 		BizHandler: func(c *gin.Context, ctx *dgctx.DgContext, req *task_model.PushTaskResultRequest) *result.Result[*result.Void] {
 			err := daogext.Write(ctx, func(tc *daog.TransContext) error {
+				if pushTaskResultCallback != nil {
+					err := pushTaskResultCallback(ctx, req)
+					if err != nil {
+						return err
+					}
+				}
+
 				err := task_provider.EndAsSuccess(ctx, tc, req.Id)
 				if err != nil {
 					return err
@@ -105,4 +116,8 @@ func Register(e *gin.Engine) {
 		},
 	})
 
+}
+
+func RegisterPushTaskResultCallback(cb PushTaskResultCallback) {
+	pushTaskResultCallback = cb
 }
