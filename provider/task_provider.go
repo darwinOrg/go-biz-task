@@ -119,8 +119,10 @@ func ReInitTimeoutProcessingTasks(ctx *dgctx.DgContext, tc *daog.TransContext, t
 
 func convertTaskVo(task *task_dal.BizTask) *task_model.CommonTaskVo {
 	return &task_model.CommonTaskVo{
-		Id:             task.Id,
-		Content:        task.Content.StringNilAsEmpty(),
-		ProcessedCount: task.ProcessedCount,
+		Id:               task.Id,
+		Content:          task.Content.StringNilAsEmpty(),
+		ScheduledStartAt: task.ScheduledStartAt.String(),
+		ScheduledEndAt:   task.ScheduledEndAt.String(),
+		ProcessedCount:   task.ProcessedCount,
 	}
 }

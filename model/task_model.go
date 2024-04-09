@@ -34,7 +34,9 @@ type EndTaskAsCanceledRequest struct {
 }
 
 type CommonTaskVo struct {
-	Id             int64  `json:"id" remark:"任务id"`
-	Content        string `json:"content" remark:"任务内容体"`
-	ProcessedCount int32  `json:"processedCount" remark:"任务已处理次数"`
+	Id               int64  `json:"id" remark:"任务id"`
+	Content          string `json:"content" remark:"任务内容体"`
+	ScheduledStartAt string `json:"scheduledStartAt" title:"计划开始时间" remark:"yyyy-MM-dd HH:mm:ss格式"`
+	ScheduledEndAt   string `json:"scheduledEndAt" title:"计划结束时间" remark:"yyyy-MM-dd HH:mm:ss格式"`
+	ProcessedCount   int32  `json:"processedCount" remark:"任务已处理次数"`
 }
