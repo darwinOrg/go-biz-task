@@ -1,14 +1,14 @@
 package task_model
 
 type InitTaskRequest struct {
-	TaskType string `json:"taskType" binding:"required" remark:"任务类型"`
-	Channel  string `json:"channel" remark:"渠道"`
+	TaskType int    `json:"taskType" binding:"required" remark:"任务类型"`
+	Channel  int    `json:"channel" remark:"渠道"`
 	Content  string `json:"content" remark:"任务内容体"`
 }
 
 type PullTaskRequest struct {
-	TaskType      string `json:"taskType" binding:"required" remark:"任务类型"`
-	Channel       string `json:"channel" remark:"渠道"`
+	TaskType      int    `json:"taskType" binding:"required" remark:"任务类型"`
+	Channel       int    `json:"channel" remark:"渠道"`
 	PageSize      int    `json:"pageSize" binding:"required"`
 	LockMilli     int64  `json:"lockMilli" binding:"required" remark:"锁定毫秒数"`
 	LockedBy      string `json:"lockedBy" binding:"required" remark:"锁定者"`

@@ -15,11 +15,11 @@ var ExtBizTaskDao = &extBizTaskDao{}
 type extBizTaskDao struct {
 }
 
-func (d *extBizTaskDao) InsertInitTask(tc *daog.TransContext, taskType string, channel string, content string) (int64, error) {
+func (d *extBizTaskDao) InsertInitTask(tc *daog.TransContext, taskType, channel int, content string) (int64, error) {
 	now := time.Now()
 	task := &BizTask{
-		Type:       taskType,
-		Channel:    channel,
+		Type:       int32(taskType),
+		Channel:    int32(channel),
 		Content:    *ttypes.FromString(content),
 		Status:     task_enum.TaskStatus.INIT,
 		CreatedAt:  ttypes.NormalDatetime(now),
@@ -41,7 +41,7 @@ func (d *extBizTaskDao) FindToHandleTasks(tc *daog.TransContext, req *task_model
 	matcher := daog.NewMatcher().
 		Eq(BizTaskFields.Type, req.TaskType).
 		In(BizTaskFields.Status, daog.ConvertToAnySlice(task_enum.ToHandleStatuses))
-	if req.Channel != "" {
+	if req.Channel > 0 {
 		matcher.Eq(BizTaskFields.Channel, req.Channel)
 	}
 
@@ -161,7 +161,7 @@ func (d *extBizTaskDao) GetByIdsAndLockedBy(tc *daog.TransContext, taskIds []int
 		Eq(BizTaskFields.LockedBy, lockedBy))
 }
 
-func (d *extBizTaskDao) ReInitTimeoutProcessingTasks(tc *daog.TransContext, taskType string, timeoutMinutes int) (int64, error) {
+func (d *extBizTaskDao) ReInitTimeoutProcessingTasks(tc *daog.TransContext, taskType int, timeoutMinutes int) (int64, error) {
 	now := time.Now()
 	modifier := daog.NewModifier().
 		Add(BizTaskFields.Status, task_enum.TaskStatus.INIT).

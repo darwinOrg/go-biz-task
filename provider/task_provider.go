@@ -104,7 +104,7 @@ func GetByIdsAndLockedBy(ctx *dgctx.DgContext, tc *daog.TransContext, taskIds []
 	return dgcoll.MapToList(tasks, convertTaskVo), nil
 }
 
-func ReInitTimeoutProcessingTasks(ctx *dgctx.DgContext, tc *daog.TransContext, taskType string, timeoutMinutes int) (int64, error) {
+func ReInitTimeoutProcessingTasks(ctx *dgctx.DgContext, tc *daog.TransContext, taskType int, timeoutMinutes int) (int64, error) {
 	count, err := task_dal.ExtBizTaskDao.ReInitTimeoutProcessingTasks(tc, taskType, timeoutMinutes)
 	if err != nil {
 		dglogger.Errorf(ctx, "ExtBizTaskDao.ReInitTimeoutProcessingTasks error: %v", err)

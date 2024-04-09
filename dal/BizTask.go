@@ -163,8 +163,8 @@ var BizTaskDao daog.QuickDao[BizTask] = &struct {
 
 type BizTask struct {
 	Id             int64
-	Type           string
-	Channel        string
+	Type           int32
+	Channel        int32
 	Content        ttypes.NilableString
 	Status         int8
 	Reason         ttypes.NilableString
