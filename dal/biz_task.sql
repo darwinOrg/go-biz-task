@@ -17,3 +17,15 @@ create table biz_task
     `modified_at`     datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP (3) ON UPDATE CURRENT_TIMESTAMP (3)
 ) engine = innodb
   character set = utf8mb4 comment '业务任务';
+
+CREATE TABLE `biz_task_result`
+(
+    `id`         bigint NOT NULL AUTO_INCREMENT,
+    `task_id`    bigint NOT NULL COMMENT '任务id',
+    `content`    text   NOT NULL COMMENT '结果内容',
+    `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP (3),
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_task_id` (`task_id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci COMMENT ='业务任务结果';

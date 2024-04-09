@@ -1,4 +1,4 @@
-package task_dal
+package dal
 
 import (
 	task_enum "github.com/darwinOrg/go-biz-task/enum"
@@ -37,7 +37,7 @@ func (d *extBizTaskDao) InsertInitTask(tc *daog.TransContext, taskType string, c
 	return task.Id, nil
 }
 
-func (d *extBizTaskDao) FindToHandleTasks(tc *daog.TransContext, req *task_model.GetTaskRequest) ([]*BizTask, error) {
+func (d *extBizTaskDao) FindToHandleTasks(tc *daog.TransContext, req *task_model.PullTaskRequest) ([]*BizTask, error) {
 	matcher := daog.NewMatcher().
 		Eq(BizTaskFields.Type, req.TaskType).
 		In(BizTaskFields.Status, daog.ConvertToAnySlice(task_enum.ToHandleStatuses))
@@ -54,7 +54,7 @@ func (d *extBizTaskDao) FindToHandleTasks(tc *daog.TransContext, req *task_model
 	return BizTaskDao.QueryPageListMatcher(tc, matcher, pager, order)
 }
 
-func (d *extBizTaskDao) RandomLockForProcessing(tc *daog.TransContext, req *task_model.GetTaskRequest) (*BizTask, error) {
+func (d *extBizTaskDao) RandomLockForProcessing(tc *daog.TransContext, req *task_model.PullTaskRequest) (*BizTask, error) {
 	tasks, err := d.FindToHandleTasks(tc, req)
 	if err != nil {
 		return nil, err

@@ -18,7 +18,7 @@ func InsertInitTask(ctx *dgctx.DgContext, tc *daog.TransContext, req *task_model
 	return taskId, nil
 }
 
-func FindToHandleTasks(ctx *dgctx.DgContext, tc *daog.TransContext, req *task_model.GetTaskRequest) ([]*task_model.CommonTaskVo, error) {
+func FindToHandleTasks(ctx *dgctx.DgContext, tc *daog.TransContext, req *task_model.PullTaskRequest) ([]*task_model.CommonTaskVo, error) {
 	tasks, err := task_dal.ExtBizTaskDao.FindToHandleTasks(tc, req)
 	if err != nil {
 		dglogger.Errorf(ctx, "ExtBizTaskDao.FindToHandleTasks error: %v", err)
@@ -30,7 +30,7 @@ func FindToHandleTasks(ctx *dgctx.DgContext, tc *daog.TransContext, req *task_mo
 	return dgcoll.MapToList(tasks, convertTaskVo), nil
 }
 
-func RandomLockForProcessing(ctx *dgctx.DgContext, tc *daog.TransContext, req *task_model.GetTaskRequest) (*task_model.CommonTaskVo, error) {
+func RandomLockForProcessing(ctx *dgctx.DgContext, tc *daog.TransContext, req *task_model.PullTaskRequest) (*task_model.CommonTaskVo, error) {
 	task, err := task_dal.ExtBizTaskDao.RandomLockForProcessing(tc, req)
 	if err != nil {
 		dglogger.Errorf(ctx, "ExtBizTaskDao.RandomLockForProcessing error: %v", err)
@@ -50,6 +50,14 @@ func EndAsSuccess(ctx *dgctx.DgContext, tc *daog.TransContext, taskId int64) err
 	err := task_dal.ExtBizTaskDao.EndAsSuccess(tc, taskId)
 	if err != nil {
 		dglogger.Errorf(ctx, "ExtBizTaskDao.EndAsSuccess error: %v", err)
+	}
+	return err
+}
+
+func PushTaskResult(ctx *dgctx.DgContext, tc *daog.TransContext, taskId int64, content string) error {
+	err := task_dal.ExtBizTaskResultDao.PushTaskResult(tc, taskId, content)
+	if err != nil {
+		dglogger.Errorf(ctx, "ExtBizTaskDao.PushTaskResult error: %v", err)
 	}
 	return err
 }

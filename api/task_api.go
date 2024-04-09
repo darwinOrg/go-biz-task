@@ -13,11 +13,11 @@ import (
 )
 
 func Register(e *gin.Engine) {
-	taskGroup := e.Group("/public/v1/task", task_permission.Check)
+	rg := e.Group("/public/v1/task", task_permission.Check)
 
 	wrapper.Post(&wrapper.RequestHolder[task_model.InitTaskRequest, *result.Result[int64]]{
 		Remark:       "初始化任务",
-		RouterGroup:  taskGroup,
+		RouterGroup:  rg,
 		RelativePath: "/init",
 		NonLogin:     true,
 		BizHandler: func(_ *gin.Context, ctx *dgctx.DgContext, req *task_model.InitTaskRequest) *result.Result[int64] {
@@ -32,12 +32,12 @@ func Register(e *gin.Engine) {
 		},
 	})
 
-	wrapper.Post(&wrapper.RequestHolder[task_model.GetTaskRequest, *result.Result[*task_model.CommonTaskVo]]{
+	wrapper.Post(&wrapper.RequestHolder[task_model.PullTaskRequest, *result.Result[*task_model.CommonTaskVo]]{
 		Remark:       "获取任务",
-		RouterGroup:  taskGroup,
+		RouterGroup:  rg,
 		RelativePath: "/pull",
 		NonLogin:     true,
-		BizHandler: func(_ *gin.Context, ctx *dgctx.DgContext, req *task_model.GetTaskRequest) *result.Result[*task_model.CommonTaskVo] {
+		BizHandler: func(_ *gin.Context, ctx *dgctx.DgContext, req *task_model.PullTaskRequest) *result.Result[*task_model.CommonTaskVo] {
 			task, err := daogext.WriteWithResult(ctx, func(tc *daog.TransContext) (*task_model.CommonTaskVo, error) {
 				return task_provider.RandomLockForProcessing(ctx, tc, req)
 			})
@@ -49,9 +49,31 @@ func Register(e *gin.Engine) {
 		},
 	})
 
+	wrapper.Post(&wrapper.RequestHolder[task_model.PushTaskResultRequest, *result.Result[*result.Void]]{
+		Remark:       "推送任务结果",
+		RouterGroup:  rg,
+		RelativePath: "push",
+		NonLogin:     true,
+		BizHandler: func(c *gin.Context, ctx *dgctx.DgContext, req *task_model.PushTaskResultRequest) *result.Result[*result.Void] {
+			err := daogext.Write(ctx, func(tc *daog.TransContext) error {
+				err := task_provider.EndAsSuccess(ctx, tc, req.Id)
+				if err != nil {
+					return err
+				}
+
+				return task_provider.PushTaskResult(ctx, tc, req.Id, req.Content)
+			})
+			if err != nil {
+				return result.FailByError[*result.Void](err)
+			}
+
+			return result.SimpleSuccess()
+		},
+	})
+
 	wrapper.Post(&wrapper.RequestHolder[task_model.EndTaskAsFailRequest, *result.Result[*result.Void]]{
 		Remark:       "失败任务",
-		RouterGroup:  taskGroup,
+		RouterGroup:  rg,
 		RelativePath: "/end-as-fail",
 		NonLogin:     true,
 		BizHandler: func(_ *gin.Context, ctx *dgctx.DgContext, req *task_model.EndTaskAsFailRequest) *result.Result[*result.Void] {
@@ -68,7 +90,7 @@ func Register(e *gin.Engine) {
 
 	wrapper.Post(&wrapper.RequestHolder[task_model.EndTaskAsCanceledRequest, *result.Result[*result.Void]]{
 		Remark:       "取消任务",
-		RouterGroup:  taskGroup,
+		RouterGroup:  rg,
 		RelativePath: "/end-as-canceled",
 		NonLogin:     true,
 		BizHandler: func(_ *gin.Context, ctx *dgctx.DgContext, req *task_model.EndTaskAsCanceledRequest) *result.Result[*result.Void] {
