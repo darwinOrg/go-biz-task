@@ -10,7 +10,7 @@ import (
 )
 
 func InsertInitTask(ctx *dgctx.DgContext, tc *daog.TransContext, req *task_model.InitTaskRequest) (int64, error) {
-	taskId, err := task_dal.ExtBizTaskDao.InsertInitTask(tc, req.TaskType, req.Channel, req.Content)
+	taskId, err := task_dal.ExtBizTaskDao.InsertInitTask(tc, req)
 	if err != nil {
 		dglogger.Errorf(ctx, "ExtBizTaskDao.InsertInitTask error: %v", err)
 		return 0, err

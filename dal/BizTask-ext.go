@@ -15,15 +15,24 @@ var ExtBizTaskDao = &extBizTaskDao{}
 type extBizTaskDao struct {
 }
 
-func (d *extBizTaskDao) InsertInitTask(tc *daog.TransContext, taskType, channel int, content string) (int64, error) {
+func (d *extBizTaskDao) InsertInitTask(tc *daog.TransContext, req *task_model.InitTaskRequest) (int64, error) {
 	now := time.Now()
 	task := &BizTask{
-		Type:       int32(taskType),
-		Channel:    int32(channel),
-		Content:    *ttypes.FromString(content),
+		Type:       int32(req.TaskType),
+		Channel:    int32(req.Channel),
+		Content:    *ttypes.FromString(req.Content),
 		Status:     task_enum.TaskStatus.INIT,
 		CreatedAt:  ttypes.NormalDatetime(now),
 		ModifiedAt: ttypes.NormalDatetime(now),
+	}
+
+	if req.BeginTime != "" {
+		beginTime, err := time.Parse(req.BeginTime, time.DateTime)
+		if err != nil {
+			return 0, err
+		}
+
+		task.BeginTime = *ttypes.FromDatetime(beginTime)
 	}
 
 	_, err := BizTaskDao.Insert(tc, task)
@@ -39,17 +48,29 @@ func (d *extBizTaskDao) InsertInitTask(tc *daog.TransContext, taskType, channel 
 
 func (d *extBizTaskDao) FindToHandleTasks(tc *daog.TransContext, req *task_model.PullTaskRequest) ([]*BizTask, error) {
 	matcher := daog.NewMatcher().
-		Eq(BizTaskFields.Type, req.TaskType).
 		In(BizTaskFields.Status, daog.ConvertToAnySlice(task_enum.ToHandleStatuses))
+	if req.TaskType > 0 {
+		matcher.Eq(BizTaskFields.Type, req.TaskType)
+	}
 	if req.Channel > 0 {
 		matcher.Eq(BizTaskFields.Channel, req.Channel)
 	}
-
 	if req.FixedLockedBy {
 		matcher.Add(daog.NewOrMatcher().Null(BizTaskFields.LockedBy, false).Eq(BizTaskFields.LockedBy, req.LockedBy))
 	}
+
+	var order *daog.Order
+	if req.FollowBeginTime {
+		matcher.Lte(BizTaskFields.BeginTime, time.Now())
+		order = daog.NewOrder(BizTaskFields.BeginTime)
+	} else {
+		order = daog.NewOrder(BizTaskFields.CreatedAt)
+	}
+
+	if req.PageSize == 0 {
+		req.PageSize = 1
+	}
 	pager := daog.NewPager(req.PageSize, 1)
-	order := daog.NewOrder(BizTaskFields.CreatedAt)
 
 	return BizTaskDao.QueryPageListMatcher(tc, matcher, pager, order)
 }
@@ -68,6 +89,9 @@ func (d *extBizTaskDao) RandomLockForProcessing(tc *daog.TransContext, req *task
 	}
 
 	for _, task := range tasks {
+		if req.LockMilli == 0 {
+			req.LockMilli = 5000
+		}
 		ok, err := d.LockForProcessing(tc, task.Id, req.LockMilli, req.LockedBy)
 		if err != nil {
 			return nil, err
@@ -86,7 +110,6 @@ func (d *extBizTaskDao) LockForProcessing(tc *daog.TransContext, taskId int64, l
 
 	modifier := daog.NewModifier().
 		Add(BizTaskFields.Status, task_enum.TaskStatus.PROCESSING).
-		Add(BizTaskFields.StartAt, ttypes.NormalDatetime(now)).
 		Add(BizTaskFields.LockedAt, ttypes.NormalDatetime(now)).
 		Add(BizTaskFields.LockUntil, lockUntil).
 		Add(BizTaskFields.LockedBy, lockedBy).
@@ -149,7 +172,11 @@ func (d *extBizTaskDao) ReInit(tc *daog.TransContext, taskId int64) error {
 	now := time.Now()
 	modifier := daog.NewModifier().
 		Add(BizTaskFields.Status, task_enum.TaskStatus.INIT).
-		SelfAdd(BizTaskFields.ProcessedCount, 1).
+		Add(BizTaskFields.Reason, nil).
+		Add(BizTaskFields.EndAt, nil).
+		Add(BizTaskFields.LockedBy, nil).
+		Add(BizTaskFields.LockedAt, nil).
+		Add(BizTaskFields.LockUntil, nil).
 		Add(BizTaskFields.ModifiedAt, ttypes.NormalDatetime(now))
 	_, err := BizTaskDao.UpdateById(tc, modifier, taskId)
 	return err
@@ -166,7 +193,6 @@ func (d *extBizTaskDao) ReInitTimeoutProcessingTasks(tc *daog.TransContext, task
 	modifier := daog.NewModifier().
 		Add(BizTaskFields.Status, task_enum.TaskStatus.INIT).
 		Add(BizTaskFields.Reason, nil).
-		Add(BizTaskFields.StartAt, nil).
 		Add(BizTaskFields.EndAt, nil).
 		Add(BizTaskFields.LockedBy, nil).
 		Add(BizTaskFields.LockedAt, nil).
@@ -175,6 +201,6 @@ func (d *extBizTaskDao) ReInitTimeoutProcessingTasks(tc *daog.TransContext, task
 	matcher := daog.NewMatcher().
 		Eq(BizTaskFields.Type, taskType).
 		Eq(BizTaskFields.Status, task_enum.TaskStatus.PROCESSING).
-		Lt(BizTaskFields.StartAt, ttypes.NormalDatetime(now.Add(time.Minute*time.Duration(-timeoutMinutes))))
+		Lt(BizTaskFields.LockedAt, ttypes.NormalDatetime(now.Add(time.Minute*time.Duration(-timeoutMinutes))))
 	return BizTaskDao.UpdateByModifier(tc, modifier, matcher)
 }

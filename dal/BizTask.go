@@ -12,7 +12,7 @@ var BizTaskFields = struct {
 	Content        string
 	Status         string
 	Reason         string
-	StartAt        string
+	BeginTime      string
 	EndAt          string
 	Priority       string
 	ProcessedCount string
@@ -28,7 +28,7 @@ var BizTaskFields = struct {
 	"content",
 	"status",
 	"reason",
-	"start_at",
+	"begin_time",
 	"end_at",
 	"priority",
 	"processed_count",
@@ -48,7 +48,7 @@ var BizTaskMeta = &daog.TableMeta[BizTask]{
 		"content",
 		"status",
 		"reason",
-		"start_at",
+		"begin_time",
 		"end_at",
 		"priority",
 		"processed_count",
@@ -96,11 +96,11 @@ var BizTaskMeta = &daog.TableMeta[BizTask]{
 			}
 			return ins.Reason
 		}
-		if "start_at" == columnName {
+		if "begin_time" == columnName {
 			if point {
-				return &ins.StartAt
+				return &ins.BeginTime
 			}
-			return ins.StartAt
+			return ins.BeginTime
 		}
 		if "end_at" == columnName {
 			if point {
@@ -168,7 +168,7 @@ type BizTask struct {
 	Content        ttypes.NilableString
 	Status         int8
 	Reason         ttypes.NilableString
-	StartAt        ttypes.NilableDatetime
+	BeginTime      ttypes.NilableDatetime
 	EndAt          ttypes.NilableDatetime
 	Priority       int32
 	ProcessedCount int32
