@@ -26,13 +26,22 @@ func (d *extBizTaskDao) InsertInitTask(tc *daog.TransContext, req *task_model.In
 		ModifiedAt: ttypes.NormalDatetime(now),
 	}
 
-	if req.BeginTime != "" {
-		beginTime, err := time.Parse(req.BeginTime, time.DateTime)
+	if req.ScheduledStartAt != "" {
+		scheduledStartAt, err := time.Parse(req.ScheduledStartAt, time.DateTime)
 		if err != nil {
 			return 0, err
 		}
 
-		task.BeginTime = *ttypes.FromDatetime(beginTime)
+		task.ScheduledStartAt = *ttypes.FromDatetime(scheduledStartAt)
+	}
+
+	if req.ScheduledEndAt != "" {
+		scheduledEndAt, err := time.Parse(req.ScheduledEndAt, time.DateTime)
+		if err != nil {
+			return 0, err
+		}
+
+		task.ScheduledEndAt = *ttypes.FromDatetime(scheduledEndAt)
 	}
 
 	_, err := BizTaskDao.Insert(tc, task)
@@ -60,9 +69,9 @@ func (d *extBizTaskDao) FindToHandleTasks(tc *daog.TransContext, req *task_model
 	}
 
 	var order *daog.Order
-	if req.FollowBeginTime {
-		matcher.Lte(BizTaskFields.BeginTime, time.Now())
-		order = daog.NewOrder(BizTaskFields.BeginTime)
+	if req.FollowScheduledStartAt {
+		matcher.Lte(BizTaskFields.ScheduledStartAt, time.Now())
+		order = daog.NewOrder(BizTaskFields.ScheduledStartAt)
 	} else {
 		order = daog.NewOrder(BizTaskFields.CreatedAt)
 	}

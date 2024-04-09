@@ -6,21 +6,22 @@ import (
 )
 
 var BizTaskFields = struct {
-	Id             string
-	Type           string
-	Channel        string
-	Content        string
-	Status         string
-	Reason         string
-	BeginTime      string
-	EndAt          string
-	Priority       string
-	ProcessedCount string
-	LockedAt       string
-	LockUntil      string
-	LockedBy       string
-	CreatedAt      string
-	ModifiedAt     string
+	Id               string
+	Type             string
+	Channel          string
+	Content          string
+	Status           string
+	Reason           string
+	ScheduledStartAt string
+	ScheduledEndAt   string
+	EndAt            string
+	Priority         string
+	ProcessedCount   string
+	LockedAt         string
+	LockUntil        string
+	LockedBy         string
+	CreatedAt        string
+	ModifiedAt       string
 }{
 	"id",
 	"type",
@@ -28,7 +29,8 @@ var BizTaskFields = struct {
 	"content",
 	"status",
 	"reason",
-	"begin_time",
+	"scheduled_start_at",
+	"scheduled_end_at",
 	"end_at",
 	"priority",
 	"processed_count",
@@ -48,7 +50,8 @@ var BizTaskMeta = &daog.TableMeta[BizTask]{
 		"content",
 		"status",
 		"reason",
-		"begin_time",
+		"scheduled_start_at",
+		"scheduled_end_at",
 		"end_at",
 		"priority",
 		"processed_count",
@@ -96,11 +99,17 @@ var BizTaskMeta = &daog.TableMeta[BizTask]{
 			}
 			return ins.Reason
 		}
-		if "begin_time" == columnName {
+		if "scheduled_start_at" == columnName {
 			if point {
-				return &ins.BeginTime
+				return &ins.ScheduledStartAt
 			}
-			return ins.BeginTime
+			return ins.ScheduledStartAt
+		}
+		if "scheduled_end_at" == columnName {
+			if point {
+				return &ins.ScheduledEndAt
+			}
+			return ins.ScheduledEndAt
 		}
 		if "end_at" == columnName {
 			if point {
@@ -162,19 +171,20 @@ var BizTaskDao daog.QuickDao[BizTask] = &struct {
 }
 
 type BizTask struct {
-	Id             int64
-	Type           int32
-	Channel        int32
-	Content        ttypes.NilableString
-	Status         int8
-	Reason         ttypes.NilableString
-	BeginTime      ttypes.NilableDatetime
-	EndAt          ttypes.NilableDatetime
-	Priority       int32
-	ProcessedCount int32
-	LockedAt       ttypes.NilableDatetime
-	LockUntil      ttypes.NilableDatetime
-	LockedBy       ttypes.NilableString
-	CreatedAt      ttypes.NormalDatetime
-	ModifiedAt     ttypes.NormalDatetime
+	Id               int64
+	Type             int32
+	Channel          int32
+	Content          ttypes.NilableString
+	Status           int8
+	Reason           ttypes.NilableString
+	ScheduledStartAt ttypes.NilableDatetime
+	ScheduledEndAt   ttypes.NilableDatetime
+	EndAt            ttypes.NilableDatetime
+	Priority         int32
+	ProcessedCount   int32
+	LockedAt         ttypes.NilableDatetime
+	LockUntil        ttypes.NilableDatetime
+	LockedBy         ttypes.NilableString
+	CreatedAt        ttypes.NormalDatetime
+	ModifiedAt       ttypes.NormalDatetime
 }
