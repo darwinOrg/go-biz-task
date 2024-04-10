@@ -13,8 +13,6 @@ import (
 )
 
 func TestBizTaskApi(t *testing.T) {
-	e := wrapper.DefaultEngine()
-	task_api.RegisterApi(e)
 	task_api.RegisterAuthHook(task_api.DefaultAuthFunc(os.Getenv("TASK_AUTH_TOKEN")))
 	task_api.RegisterPullTaskHook(func(c *gin.Context, ctx *dgctx.DgContext, _ *daog.TransContext, req *task_model.PullTaskRequest) error {
 		dglogger.Infof(ctx, "pull task req: %v", req)
@@ -24,5 +22,7 @@ func TestBizTaskApi(t *testing.T) {
 		dglogger.Infof(ctx, "push task result req: %v", req)
 		return nil
 	})
+	e := wrapper.DefaultEngine()
+	task_api.RegisterApi(e)
 	_ = e.Run(":8080")
 }
