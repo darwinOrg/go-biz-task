@@ -3,21 +3,64 @@ package task_api
 import (
 	daogext "github.com/darwinOrg/daog-ext"
 	"github.com/darwinOrg/go-biz-task/model"
-	task_permission "github.com/darwinOrg/go-biz-task/permission"
 	task_provider "github.com/darwinOrg/go-biz-task/provider"
 	dgctx "github.com/darwinOrg/go-common/context"
+	dgerr "github.com/darwinOrg/go-common/enums/error"
 	"github.com/darwinOrg/go-common/result"
+	dglogger "github.com/darwinOrg/go-logger"
+	"github.com/darwinOrg/go-web/utils"
 	"github.com/darwinOrg/go-web/wrapper"
 	"github.com/gin-gonic/gin"
 	"github.com/rolandhe/daog"
+	"net/http"
+	"strings"
 )
 
-type PushTaskResultCallback func(ctx *dgctx.DgContext, req *task_model.PushTaskResultRequest) error
+var authFunc gin.HandlerFunc
 
-var pushTaskResultCallback PushTaskResultCallback
+func RegisterAuthFunc(myAuthFunc gin.HandlerFunc) {
+	authFunc = myAuthFunc
+}
+func DefaultAuthFunc(myAuthToken string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if myAuthToken == "" {
+			c.Next()
+			return
+		}
+
+		ctx := utils.GetDgContext(c)
+		authToken := c.Request.Header["Authorization"]
+		if len(authToken) > 0 {
+			dglogger.Infof(ctx, "authToken: %s", authToken[0])
+		}
+
+		if len(authToken) == 0 || authToken[0] == "" || !strings.EqualFold(authToken[0], "Bearer "+myAuthToken) {
+			c.AbortWithStatusJSON(http.StatusOK, *result.FailByError[*dgerr.DgError](dgerr.NO_PERMISSION))
+			return
+		}
+
+		c.Next()
+	}
+}
+
+type PullTaskHook func(ctx *dgctx.DgContext, tc *daog.TransContext, req *task_model.PullTaskRequest) error
+
+var pullTaskHook PullTaskHook
+
+func RegisterPullTaskHook(hook PullTaskHook) {
+	pullTaskHook = hook
+}
+
+type PushTaskResultHook func(ctx *dgctx.DgContext, tc *daog.TransContext, req *task_model.PushTaskResultRequest) error
+
+var pushTaskResultHook PushTaskResultHook
+
+func RegisterPushTaskResultHook(hook PushTaskResultHook) {
+	pushTaskResultHook = hook
+}
 
 func RegisterApi(e *gin.Engine) {
-	rg := e.Group("/public/v1/task", task_permission.Check)
+	rg := e.Group("/public/v1/task", authFunc)
 
 	wrapper.Post(&wrapper.RequestHolder[task_model.InitTaskRequest, *result.Result[int64]]{
 		Remark:       "初始化任务",
@@ -43,6 +86,13 @@ func RegisterApi(e *gin.Engine) {
 		NonLogin:     true,
 		BizHandler: func(_ *gin.Context, ctx *dgctx.DgContext, req *task_model.PullTaskRequest) *result.Result[*task_model.CommonTaskVo] {
 			task, err := daogext.WriteWithResult(ctx, func(tc *daog.TransContext) (*task_model.CommonTaskVo, error) {
+				if pullTaskHook != nil {
+					err := pullTaskHook(ctx, tc, req)
+					if err != nil {
+						return nil, err
+					}
+				}
+
 				return task_provider.RandomLockForProcessing(ctx, tc, req)
 			})
 			if err != nil {
@@ -60,8 +110,8 @@ func RegisterApi(e *gin.Engine) {
 		NonLogin:     true,
 		BizHandler: func(c *gin.Context, ctx *dgctx.DgContext, req *task_model.PushTaskResultRequest) *result.Result[*result.Void] {
 			err := daogext.Write(ctx, func(tc *daog.TransContext) error {
-				if pushTaskResultCallback != nil {
-					err := pushTaskResultCallback(ctx, req)
+				if pushTaskResultHook != nil {
+					err := pushTaskResultHook(ctx, tc, req)
 					if err != nil {
 						return err
 					}
@@ -116,8 +166,4 @@ func RegisterApi(e *gin.Engine) {
 		},
 	})
 
-}
-
-func RegisterPushTaskResultCallback(cb PushTaskResultCallback) {
-	pushTaskResultCallback = cb
 }

@@ -12,7 +12,7 @@ import (
 func TestBizTaskApi(t *testing.T) {
 	e := wrapper.DefaultEngine()
 	task_api.RegisterApi(e)
-	task_api.RegisterPushTaskResultCallback(func(ctx *dgctx.DgContext, req *task_model.PushTaskResultRequest) error {
+	task_api.RegisterPushTaskResultHook(func(ctx *dgctx.DgContext, req *task_model.PushTaskResultRequest) error {
 		dglogger.Infof(ctx, "req: %v", req)
 		return nil
 	})
