@@ -15,8 +15,8 @@ github.com/chenzhuoyu/iasm v0.9.1 h1:tUHQJXo3NhBqw6s33wkGn9SP3bvrWLdlVIJ3hQBL7P0
 github.com/chenzhuoyu/iasm v0.9.1/go.mod h1:Xjy2NpN3h7aUqeqM+woSuuvxmIe6+DDsiNLIrkAmYog=
 github.com/darwinOrg/daog-ext v0.0.3 h1:Gqje5eXJ6NH69rdAlCLCp47Mrpe6bzFthe9GbD1JAb8=
 github.com/darwinOrg/daog-ext v0.0.3/go.mod h1:MSUwH/T6J+FnyUnsZfZgK4JxP2ijGYHfTiAJu06cWgE=
-github.com/darwinOrg/go-common v0.1.26 h1:Pg3g+ygP4WVowUU11mdHnRds952WWXmVrJmExvLYv9g=
-github.com/darwinOrg/go-common v0.1.26/go.mod h1:pItL/4ZV0bU64N2qD9ACpvDlYjeomAbheIzPXKqbb88=
+github.com/darwinOrg/go-common v0.1.27 h1:pxKVUIGNP0vX06ZP4dWGNpzw0EVjpbcHjDVfa85ai3s=
+github.com/darwinOrg/go-common v0.1.27/go.mod h1:pItL/4ZV0bU64N2qD9ACpvDlYjeomAbheIzPXKqbb88=
 github.com/darwinOrg/go-logger v0.0.5 h1:lnbPEGuUAhkqSbktHOtv8Lxe8RJaeF4KY/uud29hVE4=
 github.com/darwinOrg/go-logger v0.0.5/go.mod h1:dwla5VIX7XcW296g91XS+T+Vomix3YijQz9eYuLXtL8=
 github.com/darwinOrg/go-monitor v0.0.3 h1:zSgB1Tv/O2MIDq0xWPipJWvZsCI23nsn0FecSM59GBs=

@@ -27,7 +27,7 @@ func (d *extBizTaskDao) InsertInitTask(tc *daog.TransContext, req *task_model.In
 	}
 
 	if req.ScheduledStartAt != "" {
-		scheduledStartAt, err := time.Parse(req.ScheduledStartAt, time.DateTime)
+		scheduledStartAt, err := time.Parse(req.ScheduledStartAt, ttypes.DatetimeFormat)
 		if err != nil {
 			return 0, err
 		}
@@ -36,7 +36,7 @@ func (d *extBizTaskDao) InsertInitTask(tc *daog.TransContext, req *task_model.In
 	}
 
 	if req.ScheduledEndAt != "" {
-		scheduledEndAt, err := time.Parse(req.ScheduledEndAt, time.DateTime)
+		scheduledEndAt, err := time.Parse(req.ScheduledEndAt, ttypes.DatetimeFormat)
 		if err != nil {
 			return 0, err
 		}
