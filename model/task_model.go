@@ -9,13 +9,13 @@ type InitTaskRequest struct {
 }
 
 type PullTaskRequest struct {
-	TaskType               int    `json:"taskType" remark:"任务类型"`
-	Channel                int    `json:"channel" remark:"渠道"`
-	PageSize               int    `json:"pageSize" title:"页码" remark:"从多少条任务中随机选择一条，默认为1"`
-	LockMilli              int64  `json:"lockMilli" title:"锁定毫秒数" remark:"默认为5000"`
-	LockedBy               string `json:"lockedBy" title:"锁定者" remark:"最好是唯一标志"`
-	FixedLockedBy          bool   `json:"fixedLockedBy" title:"是否固定锁定者" remark:"如果是，则后续任务失败后也只能再由当前锁定者处理"`
-	FollowScheduledStartAt bool   `json:"followScheduledStartAt" title:"是否按照计划开始时间" remark:"如果是，则按照计划开始时间顺序拉取任务，时间未到不会返回任务"`
+	TaskType            int    `json:"taskType" remark:"任务类型"`
+	Channel             int    `json:"channel" remark:"渠道"`
+	PageSize            int    `json:"pageSize" title:"页码" remark:"从多少条任务中随机选择一条，默认为1"`
+	LockMilli           int64  `json:"lockMilli" title:"锁定毫秒数" remark:"默认为5000"`
+	LockedBy            string `json:"lockedBy" title:"锁定者" remark:"最好是唯一标志"`
+	FixedLockedBy       bool   `json:"fixedLockedBy" title:"是否固定锁定者" remark:"如果是，则后续任务失败后也只能再由当前锁定者处理"`
+	FollowScheduledTime bool   `json:"followScheduledTime" title:"是否按照计划时间" remark:"如果是，则按照计划开始时间顺序拉取任务，时间未到或超过设定的结束时间都不会返回任务"`
 }
 
 type PushTaskResultRequest struct {

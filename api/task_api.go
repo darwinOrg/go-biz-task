@@ -43,7 +43,7 @@ func DefaultAuthFunc(myAuthToken string) gin.HandlerFunc {
 	}
 }
 
-type PullTaskHook func(ctx *dgctx.DgContext, tc *daog.TransContext, req *task_model.PullTaskRequest) error
+type PullTaskHook func(c *gin.Context, ctx *dgctx.DgContext, tc *daog.TransContext, req *task_model.PullTaskRequest) error
 
 var pullTaskHook PullTaskHook
 
@@ -51,7 +51,7 @@ func RegisterPullTaskHook(hook PullTaskHook) {
 	pullTaskHook = hook
 }
 
-type PushTaskResultHook func(ctx *dgctx.DgContext, tc *daog.TransContext, req *task_model.PushTaskResultRequest) error
+type PushTaskResultHook func(c *gin.Context, ctx *dgctx.DgContext, tc *daog.TransContext, req *task_model.PushTaskResultRequest) error
 
 var pushTaskResultHook PushTaskResultHook
 
@@ -84,10 +84,10 @@ func RegisterApi(e *gin.Engine) {
 		RouterGroup:  rg,
 		RelativePath: "/pull",
 		NonLogin:     true,
-		BizHandler: func(_ *gin.Context, ctx *dgctx.DgContext, req *task_model.PullTaskRequest) *result.Result[*task_model.CommonTaskVo] {
+		BizHandler: func(c *gin.Context, ctx *dgctx.DgContext, req *task_model.PullTaskRequest) *result.Result[*task_model.CommonTaskVo] {
 			task, err := daogext.WriteWithResult(ctx, func(tc *daog.TransContext) (*task_model.CommonTaskVo, error) {
 				if pullTaskHook != nil {
-					err := pullTaskHook(ctx, tc, req)
+					err := pullTaskHook(c, ctx, tc, req)
 					if err != nil {
 						return nil, err
 					}
@@ -111,7 +111,7 @@ func RegisterApi(e *gin.Engine) {
 		BizHandler: func(c *gin.Context, ctx *dgctx.DgContext, req *task_model.PushTaskResultRequest) *result.Result[*result.Void] {
 			err := daogext.Write(ctx, func(tc *daog.TransContext) error {
 				if pushTaskResultHook != nil {
-					err := pushTaskResultHook(ctx, tc, req)
+					err := pushTaskResultHook(c, ctx, tc, req)
 					if err != nil {
 						return err
 					}

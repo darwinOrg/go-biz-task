@@ -69,7 +69,7 @@ func (d *extBizTaskDao) FindToHandleTasks(tc *daog.TransContext, req *task_model
 	}
 
 	var order *daog.Order
-	if req.FollowScheduledStartAt {
+	if req.FollowScheduledTime {
 		now := time.Now()
 		matcher.Lte(BizTaskFields.ScheduledStartAt, now)
 		matcher.Add(daog.NewOrMatcher().Null(BizTaskFields.ScheduledEndAt, false).Gte(BizTaskFields.ScheduledEndAt, now))
