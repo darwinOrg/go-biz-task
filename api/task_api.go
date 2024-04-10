@@ -16,10 +16,10 @@ import (
 	"strings"
 )
 
-var authFunc gin.HandlerFunc
+var authHook gin.HandlerFunc
 
-func RegisterAuthFunc(myAuthFunc gin.HandlerFunc) {
-	authFunc = myAuthFunc
+func RegisterAuthHook(myAuthHook gin.HandlerFunc) {
+	authHook = myAuthHook
 }
 func DefaultAuthFunc(myAuthToken string) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -60,7 +60,7 @@ func RegisterPushTaskResultHook(hook PushTaskResultHook) {
 }
 
 func RegisterApi(e *gin.Engine) {
-	rg := e.Group("/public/v1/task", authFunc)
+	rg := e.Group("/public/v1/task", authHook)
 
 	wrapper.Post(&wrapper.RequestHolder[task_model.InitTaskRequest, *result.Result[int64]]{
 		Remark:       "初始化任务",
