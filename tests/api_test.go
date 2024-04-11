@@ -1,6 +1,7 @@
 package tests
 
 import (
+	daogext "github.com/darwinOrg/daog-ext"
 	task_api "github.com/darwinOrg/go-biz-task/api"
 	"github.com/darwinOrg/go-biz-task/model"
 	dgctx "github.com/darwinOrg/go-common/context"
@@ -13,6 +14,20 @@ import (
 )
 
 func TestBizTaskApi(t *testing.T) {
+	dbConf := &daog.DbConf{
+		DbUrl:    "root:12345678@tcp(localhost:3306)/task",
+		Size:     20,
+		IdleCons: 10,
+		Life:     3600,
+		IdleTime: 1200,
+		LogSQL:   true,
+	}
+	db, err := daog.NewDatasource(dbConf)
+	if err != nil {
+		panic(err)
+	}
+	daogext.SetDatasource(db)
+
 	task_api.RegisterAuthHook(task_api.DefaultAuthFunc(os.Getenv("TASK_AUTH_TOKEN")))
 	task_api.RegisterPullTaskHook(func(c *gin.Context, ctx *dgctx.DgContext, _ *daog.TransContext, req *task_model.PullTaskRequest) error {
 		dglogger.Infof(ctx, "pull task req: %v", req)
