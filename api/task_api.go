@@ -62,23 +62,6 @@ func RegisterPushTaskResultHook(hook PushTaskResultHook) {
 func RegisterApi(e *gin.Engine) {
 	rg := e.Group("/public/v1/task", authHook)
 
-	wrapper.Post(&wrapper.RequestHolder[task_model.InitTaskRequest, *result.Result[int64]]{
-		Remark:       "初始化任务",
-		RouterGroup:  rg,
-		RelativePath: "/init",
-		NonLogin:     true,
-		BizHandler: func(_ *gin.Context, ctx *dgctx.DgContext, req *task_model.InitTaskRequest) *result.Result[int64] {
-			taskId, err := daogext.WriteWithResult(ctx, func(tc *daog.TransContext) (int64, error) {
-				return task_provider.InsertInitTask(ctx, tc, req)
-			})
-			if err != nil {
-				return result.FailByError[int64](err)
-			}
-
-			return result.Success(taskId)
-		},
-	})
-
 	wrapper.Post(&wrapper.RequestHolder[task_model.PullTaskRequest, *result.Result[*task_model.CommonTaskVo]]{
 		Remark:       "拉取任务",
 		RouterGroup:  rg,
@@ -166,4 +149,23 @@ func RegisterApi(e *gin.Engine) {
 		},
 	})
 
+}
+
+func RegisterInitTaskApi(rg *gin.RouterGroup) {
+	wrapper.Post(&wrapper.RequestHolder[task_model.InitTaskRequest, *result.Result[int64]]{
+		Remark:       "初始化任务",
+		RouterGroup:  rg,
+		RelativePath: "/init",
+		NonLogin:     true,
+		BizHandler: func(_ *gin.Context, ctx *dgctx.DgContext, req *task_model.InitTaskRequest) *result.Result[int64] {
+			taskId, err := daogext.WriteWithResult(ctx, func(tc *daog.TransContext) (int64, error) {
+				return task_provider.InsertInitTask(ctx, tc, req)
+			})
+			if err != nil {
+				return result.FailByError[int64](err)
+			}
+
+			return result.Success(taskId)
+		},
+	})
 }

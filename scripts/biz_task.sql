@@ -3,7 +3,7 @@ create table biz_task
     `id`                 bigint auto_increment primary key,
     `type`               int     NOT NULL DEFAULT '' COMMENT '任务类型',
     `channel`            int     NOT NULL DEFAULT '' COMMENT '渠道',
-    `content`            text COMMENT '任务内容',
+    `content`            longtext COMMENT '任务内容',
     `status`             tinyint NOT NULL DEFAULT 0 COMMENT '状态（0：初始化，1：处理中，2：成功，3：失败）',
     `reason`             varchar(64) COMMENT '失败原因',
     `scheduled_start_at` datetime(3) COMMENT '计划开始时间',
@@ -21,9 +21,9 @@ create table biz_task
 
 CREATE TABLE `biz_task_result`
 (
-    `id`         bigint NOT NULL AUTO_INCREMENT,
-    `task_id`    bigint NOT NULL COMMENT '任务id',
-    `content`    text   NOT NULL COMMENT '结果内容',
+    `id`         bigint   NOT NULL AUTO_INCREMENT,
+    `task_id`    bigint   NOT NULL COMMENT '任务id',
+    `content`    longtext NOT NULL COMMENT '结果内容',
     `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP (3),
     PRIMARY KEY (`id`),
     UNIQUE KEY `uk_task_id` (`task_id`)
