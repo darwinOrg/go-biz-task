@@ -1,8 +1,8 @@
 create table biz_task
 (
     `id`                 bigint auto_increment primary key,
-    `type`               int     NOT NULL DEFAULT '' COMMENT '任务类型',
-    `channel`            int     NOT NULL DEFAULT '' COMMENT '渠道',
+    `type`               int     NOT NULL COMMENT '任务类型',
+    `channel`            int     NOT NULL COMMENT '渠道',
     `content`            longtext COMMENT '任务内容',
     `status`             tinyint NOT NULL DEFAULT 0 COMMENT '状态（0：初始化，1：处理中，2：成功，3：失败）',
     `reason`             varchar(64) COMMENT '失败原因',
