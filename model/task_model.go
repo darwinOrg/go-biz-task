@@ -38,7 +38,7 @@ type CommonTaskVo struct {
 	TaskType         int    `json:"taskType" remark:"任务类型"`
 	Channel          int    `json:"channel" remark:"渠道"`
 	Content          string `json:"content" remark:"任务内容体"`
-	ScheduledStartAt string `json:"scheduledStartAt" title:"计划开始时间" remark:"yyyy-MM-dd HH:mm:ss格式"`
-	ScheduledEndAt   string `json:"scheduledEndAt" title:"计划结束时间" remark:"yyyy-MM-dd HH:mm:ss格式"`
+	ScheduledStartAt int64  `json:"scheduledStartAt" title:"计划开始时间"`
+	ScheduledEndAt   int64  `json:"scheduledEndAt" title:"计划结束时间"`
 	ProcessedCount   int32  `json:"processedCount" remark:"任务已处理次数"`
 }
