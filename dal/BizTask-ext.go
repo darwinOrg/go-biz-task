@@ -71,8 +71,8 @@ func (d *extBizTaskDao) FindToHandleTasks(tc *daog.TransContext, req *task_model
 	var order *daog.Order
 	if req.FollowScheduledTime {
 		now := time.Now()
-		matcher.Gte(BizTaskFields.ScheduledStartAt, now)
-		matcher.Add(daog.NewOrMatcher().Null(BizTaskFields.ScheduledEndAt, false).Lte(BizTaskFields.ScheduledEndAt, now))
+		matcher.Lte(BizTaskFields.ScheduledStartAt, now)
+		matcher.Add(daog.NewOrMatcher().Null(BizTaskFields.ScheduledEndAt, false).Gte(BizTaskFields.ScheduledEndAt, now))
 		order = daog.NewOrder(BizTaskFields.ScheduledStartAt)
 	} else {
 		order = daog.NewOrder(BizTaskFields.CreatedAt)
